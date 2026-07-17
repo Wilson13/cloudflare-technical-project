@@ -1,11 +1,14 @@
 GET http://localhost:3000/get
 [Options]
 delay: 1s
-HTTP 200
+HTTP 405
 
-POST http://localhost:3000/post
+POST http://localhost:3000/headers
 [Options]
 delay: 1s
-HTTP 200
+HTTP 405
 
-PUT http://localhost:3000/put
+GET http://localhost:3000/headers
+HTTP *
+[Asserts]
+status == 200

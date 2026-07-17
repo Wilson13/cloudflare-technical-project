@@ -7,13 +7,14 @@ const PORT = 3000;
 const server = http.createServer((req: http.IncomingMessage, res: http.ServerResponse) => {
 
   // Restrict to specific path and method
-  if (req.url === '/api/data' && req.method === 'POST') {
+  if (req.url === '/headers' && req.method === 'GET') {
      // Set the response HTTP status and headers
   res.writeHead(200, { 'Content-Type': 'application/json' });
 
   // Create a JSON payload response
   const responseData = {
-    message: "Hello from TypeScript HTTP Server!",
+    message: "Hello! Here's your headers.",
+    headers: req.headers,
     path: req.url,
     timestamp: new Date().toISOString()
   };
