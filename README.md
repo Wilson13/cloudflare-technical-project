@@ -21,11 +21,3 @@ Bought a domain on Cloudflare "wilson-here.uk".
 > JavaScript, Python, etc) or by using a 3rd party application.
 
 Deployed an EC2 using Terraform.
-
-### EC2 Info and Connection
-
-```
-instance_id = "i-027ec5292204bb956" instance_public_ip = "54.151.221.129"
-private_key_path = "./small-ec2-key.pem" ssh_command = "ssh -i
-./small-ec2-key.pem ec2-user@54.151.221.129"
-```
