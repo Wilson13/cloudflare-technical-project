@@ -21,3 +21,9 @@ variable "instance_name" {
   type        = string
   default     = "small-ec2"
 }
+
+variable "app_port" {
+  description = "Port the application listens on inside the EC2 instance"
+  type        = number
+  default     = 3000
+}

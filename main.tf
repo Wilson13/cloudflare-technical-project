@@ -2,6 +2,17 @@ provider "aws" {
   region = var.aws_region
 }
 
+data "aws_vpc" "default" {
+  default = true
+}
+
+data "aws_subnets" "default" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.default.id]
+  }
+}
+
 # Latest Amazon Linux 2023 AMI (x86_64), free-tier compatible
 data "aws_ami" "amazon_linux" {
   most_recent = true
@@ -36,6 +47,30 @@ resource "local_sensitive_file" "private_key" {
   file_permission = "0400"
 }
 
+resource "aws_security_group" "alb" {
+  name        = "${var.instance_name}-alb-sg"
+  description = "Allow HTTP from the internet to the ALB"
+
+  ingress {
+    description = "HTTP"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.instance_name}-alb-sg"
+  }
+}
+
 resource "aws_security_group" "this" {
   name        = "${var.instance_name}-sg"
   description = "Allow SSH access"
@@ -46,6 +81,14 @@ resource "aws_security_group" "this" {
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = [var.allowed_ssh_cidr]
+  }
+
+  ingress {
+    description     = "App traffic from ALB"
+    from_port       = var.app_port
+    to_port         = var.app_port
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb.id]
   }
 
   ingress {
@@ -82,5 +125,45 @@ resource "aws_instance" "this" {
 
   tags = {
     Name = var.instance_name
+  }
+}
+
+resource "aws_lb" "this" {
+  name               = "${var.instance_name}-alb"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.alb.id]
+  subnets            = data.aws_subnets.default.ids
+}
+
+resource "aws_lb_target_group" "this" {
+  name        = "${var.instance_name}-tg"
+  port        = var.app_port
+  protocol    = "HTTP"
+  vpc_id      = data.aws_vpc.default.id
+  target_type = "instance"
+
+  health_check {
+    path                = "/"
+    port                = "traffic-port"
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+  }
+}
+
+resource "aws_lb_target_group_attachment" "this" {
+  target_group_arn = aws_lb_target_group.this.arn
+  target_id        = aws_instance.this.id
+  port             = var.app_port
+}
+
+resource "aws_lb_listener" "http" {
+  load_balancer_arn = aws_lb.this.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.this.arn
   }
 }

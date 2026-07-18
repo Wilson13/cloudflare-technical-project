@@ -17,3 +17,8 @@ output "ssh_command" {
   description = "Command to SSH into the instance"
   value       = "ssh -i ${local_sensitive_file.private_key.filename} ec2-user@${aws_instance.this.public_ip}"
 }
+
+output "alb_dns_name" {
+  description = "DNS name of the ALB - hit this on port 80, it forwards to the instance's app_port"
+  value       = aws_lb.this.dns_name
+}
