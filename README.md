@@ -71,3 +71,127 @@ sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder
 
 > Set a rate limiting rule on Cloudflare. How would you demonstrate to a
 > customer that this rate limiting rule works?
+
+![cloudflare_rate_limitng.png](docs/cloudflare_rate_limitng.png)
+
+```sh
+hurl -v test_rate_limiting.hurl
+* ------------------------------------------------------------------------------
+* Executing entry 1
+*
+* Entry options:
+* delay: 1s
+* repeat: 3
+*
+* Delay entry 1 (pause 1000 ms)
+*
+* Cookie store:
+*
+* Request:
+* GET https://app.wilson-here.uk/headers
+*
+* Request can be run with the following curl command:
+* curl 'https://app.wilson-here.uk/headers'
+*
+> GET /headers HTTP/2
+> Host: app.wilson-here.uk
+> Accept: */*
+> User-Agent: hurl/8.0.1
+>
+* Response: (received 580 bytes in 312 ms)
+*
+< HTTP/2 200
+< date: Sat, 18 Jul 2026 10:25:01 GMT
+< content-type: application/json
+< cf-cache-status: DYNAMIC
+< nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+< report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=fvtpjvEJyJOLx5CbFQ%2Bboth%2BtzKVO2u9%2Ft40lild4ISVI2BZLjNBYytaSO%2FrY%2B3U3V9HW5HSNOQSh2zg5JEvJ%2FdWEP7%2FIDScQG77Fmgc3JIq3itMm8DHuGeBzIH652QlMi97SiKEnR%2BUPz3cx4%2BYt5U%3D"}]}
+< server: cloudflare
+< cf-ray: a1d0c7aeec1ed4de-SIN
+< alt-svc: h3=":443"; ma=86400
+<
+*
+* Repeat entry 1 (x1/3)
+* ------------------------------------------------------------------------------
+* Executing entry 1
+*
+* Entry options:
+* delay: 1s
+* repeat: 3
+*
+* Delay entry 1 (pause 1000 ms)
+*
+* Cookie store:
+*
+* Request:
+* GET https://app.wilson-here.uk/headers
+*
+* Request can be run with the following curl command:
+* curl 'https://app.wilson-here.uk/headers'
+*
+> GET /headers HTTP/2
+> Host: app.wilson-here.uk
+> Accept: */*
+> User-Agent: hurl/8.0.1
+>
+* Response: (received 17 bytes in 69 ms)
+*
+< HTTP/2 429
+< date: Sat, 18 Jul 2026 10:25:02 GMT
+< content-type: text/plain; charset=UTF-8
+< content-length: 17
+< retry-after: 10
+< cache-control: private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0
+< expires: Thu, 01 Jan 1970 00:00:01 GMT
+< referrer-policy: same-origin
+< x-frame-options: SAMEORIGIN
+< report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=JMekU5PKHk8gYp03vhODGj8gOcXHDVvGKVsBEGWfxgxu2%2BpKvA1PNBuDl5AgeTokcdJO01I92ztL%2BuFgl5HCvI%2BzUEfKf8yOx%2F5bfUoFSKpV%2Fd%2BMjyyo1GxH4oYspGGeg%2Bp04z2D1Xu3uc7RIUjV5Ds%3D"}]}
+< nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+< server: cloudflare
+< cf-ray: a1d0c7b60b48d4de-SIN
+< alt-svc: h3=":443"; ma=86400
+<
+*
+* Repeat entry 1 (x2/3)
+* ------------------------------------------------------------------------------
+* Executing entry 1
+*
+* Entry options:
+* delay: 1s
+* repeat: 3
+*
+* Delay entry 1 (pause 1000 ms)
+*
+* Cookie store:
+*
+* Request:
+* GET https://app.wilson-here.uk/headers
+*
+* Request can be run with the following curl command:
+* curl 'https://app.wilson-here.uk/headers'
+*
+> GET /headers HTTP/2
+> Host: app.wilson-here.uk
+> Accept: */*
+> User-Agent: hurl/8.0.1
+>
+* Response: (received 17 bytes in 57 ms)
+*
+< HTTP/2 429
+< date: Sat, 18 Jul 2026 10:25:03 GMT
+< content-type: text/plain; charset=UTF-8
+< content-length: 17
+< retry-after: 9
+< cache-control: private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0
+< expires: Thu, 01 Jan 1970 00:00:01 GMT
+< referrer-policy: same-origin
+< x-frame-options: SAMEORIGIN
+< report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=kRIl1nlfhU61smEO2K5csNtzf5ZEdcE3mRUcGfi4Oo7ZmsM7G2mmYrNoekdNsPmjo5TqtvxDeLcdJ2Xf5pKR%2FPtb%2BkIgC1HvVDUSjY4vy3mJbg72yiwWnMlVjXjh3jLPHyXlLu%2B%2Fhsyp7Op6fqB3E%2Bg%3D"}]}
+< nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+< server: cloudflare
+< cf-ray: a1d0c7bcb97fd4de-SIN
+< alt-svc: h3=":443"; ma=86400
+<
+*
+error code: 1015
+```
