@@ -22,3 +22,14 @@ output "alb_dns_name" {
   description = "DNS name of the ALB - hit this on port 80, it forwards to the instance's app_port"
   value       = aws_lb.this.dns_name
 }
+
+output "acm_validation_records" {
+  description = "DNS records to create in Cloudflare (as CNAME, DNS-only/grey-clouded) to validate the ACM certificate"
+  value = [
+    for o in aws_acm_certificate.this.domain_validation_options : {
+      name  = o.resource_record_name
+      type  = o.resource_record_type
+      value = o.resource_record_value
+    }
+  ]
+}
