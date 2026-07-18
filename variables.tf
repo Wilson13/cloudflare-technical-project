@@ -34,6 +34,29 @@ variable "domain_name" {
   default     = "*.wilson-here.uk"
 }
 
+variable "cloudflare_tunnel_ips" {
+  description = "Cloudflare Tunnel edge IPs that cloudflared connects out to on port 7844"
+  type        = list(string)
+  default = [
+    "198.41.192.167/32",
+    "198.41.192.67/32",
+    "198.41.192.57/32",
+    "198.41.192.107/32",
+    "198.41.192.27/32",
+    "198.41.192.7/32",
+    "198.41.192.227/32",
+    "198.41.192.47/32",
+    "198.41.192.37/32",
+    "198.41.192.77/32",
+  ]
+}
+
+variable "cloudflare_tunnel_port" {
+  description = "Port cloudflared uses to connect to the Cloudflare Tunnel edge"
+  type        = number
+  default     = 7844
+}
+
 variable "cloudflare_cidrs" {
   description = "Cloudflare published IPv4 CIDR ranges allowed to reach the ALB on 443 (see https://www.cloudflare.com/ips/)"
   type        = list(string)

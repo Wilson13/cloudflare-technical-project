@@ -99,19 +99,20 @@ resource "aws_security_group" "this" {
     security_groups = [aws_security_group.alb.id]
   }
 
-  ingress {
-    description = "HTTP"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+  egress {
+    description = "Cloudflare Tunnel (QUIC/UDP)"
+    from_port   = var.cloudflare_tunnel_port
+    to_port     = var.cloudflare_tunnel_port
+    protocol    = "udp"
+    cidr_blocks = var.cloudflare_tunnel_ips
   }
 
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    description = "Cloudflare Tunnel (HTTP/2 fallback/TCP)"
+    from_port   = var.cloudflare_tunnel_port
+    to_port     = var.cloudflare_tunnel_port
+    protocol    = "tcp"
+    cidr_blocks = var.cloudflare_tunnel_ips
   }
 
   tags = {
