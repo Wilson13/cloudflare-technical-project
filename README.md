@@ -20,4 +20,23 @@ Bought a domain on Cloudflare "wilson-here.uk".
 > The web server can be something that you have written yourself (e.g. in
 > JavaScript, Python, etc) or by using a 3rd party application.
 
-Deployed an EC2 using Terraform.
+- Deployed an EC2 using Terraform.
+- Ran a NodeJS http server.
+
+![ec2_http_response](docs/ec2_http_response.png)
+
+## Step 2
+
+> Proxy traffic to this server through Cloudflare. Add necessary configurations
+> on Cloudflare.
+
+![cname_proxy](docs/cname_proxy.png)
+
+Default TLS mode was Full. However HTTPS connection won't work due to no
+certificate set up on ALB.
+
+3.
+
+> Secure the communication between Cloudflare and your Origin Server with a
+> non-Cloudflare provisioned TLS certificate using at least the Full-Strict mode
+> on Cloudflare
