@@ -6,3 +6,4 @@
 terraform.tfvars
 .aws
 node_modules
+/assets/flags-4x3/*.svg

@@ -5,7 +5,7 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "secure-path",
-	"main": "src/index.js",
+	"main": "src/index.ts",
 	"compatibility_date": "2026-07-18",
 	// "assets": {
 	// 	// The path to the directory containing the `index.html` file to be served at `/`
@@ -21,9 +21,15 @@
 	],
   "routes": [
     {
-      "pattern": "tunnel.wilson-here.uk/secure",
+      "pattern": "tunnel.wilson-here.uk/secure*",
       "zone_name": "wilson-here.uk"
     },
+  ],
+  "r2_buckets": [
+    {
+      "bucket_name": "country-flag-bucket",
+      "binding": "COUNTRY_FLAG_BUCKET"
+    }
   ]
 	/**
 	 * Smart Placement

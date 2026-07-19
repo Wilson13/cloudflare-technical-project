@@ -210,3 +210,34 @@ for port 22 (SSH) and TCP from AWS ALB and allow only outbound traffic to the
 Cloudflare Tunnel IP addresses. All Security Group rules are Allow rules;
 traffic that does not match a rule is blocked. Therefore, you can delete all
 inbound rules and leave only the relevant outbound rules.
+
+## Step 8 (Did this before Step 6 & 7)
+
+### Setup a worker returning HTML with partial required info
+
+Followed instructions here:
+
+- https://developers.cloudflare.com/workers/wrangler/commands/workers/
+- https://developers.cloudflare.com/workers/wrangler/configuration/
+- https://developers.cloudflare.com/workers/configuration/routing/routes/
+- https://claytonerrington.com/blog/using-cloud-flare-workers-to-get-visitor-information/
+
+![worker_html_partial.png](docs/worker_html_partial.png)
+
+### Set up R2 bucket, upload flags, display svg
+
+- https://developers.cloudflare.com/workers/tutorials/upload-assets-with-r2/
+- https://flagicons.lipis.dev/
+
+```sh
+# Needs to enable R2 on the Cloudflare Dashboard
+npx wrangler r2 bucket create country-flag-bucket
+c
+npx wrangler r2 bucket list
+
+npx wrangler r2 object put country-flag-bucket/my.svg --file=../assets/flags-4x3/my.svg --remote
+```
+
+![worker_html_partial_w_link.png](docs/worker_html_partial_w_link.png)
+
+![worker_flag_unprotected.png](docs/worker_flag_unprotected.png)
