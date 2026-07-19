@@ -241,3 +241,31 @@ npx wrangler r2 object put country-flag-bucket/my.svg --file=../assets/flags-4x3
 ![worker_html_partial_w_link.png](docs/worker_html_partial_w_link.png)
 
 ![worker_flag_unprotected.png](docs/worker_flag_unprotected.png)
+
+## Step 6
+
+> Configure an SSO IdP (Identity Provider) of your choosing within Cloudflare
+> Zero Trust. Please note that Cloudflare also provides an “OTP” option, in case
+> you do not have any IdPs available to configure.
+
+## Step 7
+
+> Lock down access for a particular path for your Cloudflare Tunnel subdomain
+> (e.g. tunnel.yourwebsite.com/secure) and only allow access for yourself (with
+> the previously configured IdP of your choosing) and users with an
+> @cloudflare.com email address .\
+> a. Ensure nobody can bypass Cloudflare and access your server’s IP directly.
+
+- https://developers.cloudflare.com/cloudflare-one/integrations/identity-providers/one-time-pin/
+
+### Configured Cloudflare OTP and IdP and Secured Path
+
+Path: tunnel.wilson-here.uk/secure
+
+(which includes tunnel.wilson-here.uk/secure/{country})
+
+![application_access_policy.png](docs/application_access_policy.png)
+
+![application_access.png](docs/application_access.png)
+
+![application_login_page.png](docs/application_login_page.png)

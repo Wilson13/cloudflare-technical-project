@@ -8,12 +8,15 @@ export default {
   // request: An instance of the standard Web Request API. 
   // It includes HTTP headers, method, body parameters, and custom properties 
   // added by Cloudflare like request.cf (geographic and network data).
-  async fetch(request: { url: string | URL; cf: { country: any; }; }, env: Env) {
+  async fetch(request: {
+    headers: any; url: string | URL; cf: { country: any; };
+  }, env: Env) {
     const url = new URL(request.url);
     const requestTimestamp = Date.now();
     const country = request.cf.country;
+    const userEmail = request.headers.get("Cf-Access-Authenticated-User-Email");
 
-    if (url.pathname === "/secure") {
+    if (url.pathname === "/secure" || url.pathname === "/secure/") {
 
       const htmlContent = `
         <!DOCTYPE html>
@@ -25,7 +28,7 @@ export default {
         <body>
             <h1>Welcome to my Cloudflare Worker!</h1>
             <p>
-              Email TBC authenticated at ${requestTimestamp} (${new Date(requestTimestamp).toISOString()}) from <a href="/secure/${country}">${country}<a>
+              ${userEmail} authenticated at ${requestTimestamp} (${new Date(requestTimestamp).toISOString()}) from <a href="/secure/${country}">${country}<a>
             </p>
         <pre>Cloudflare-specific metadata : ${JSON.stringify(request.cf, null, 2)}</p><pre>
       </body>
