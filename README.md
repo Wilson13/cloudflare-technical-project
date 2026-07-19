@@ -195,3 +195,18 @@ hurl -v test_rate_limiting.hurl
 *
 error code: 1015
 ```
+
+## Step 5
+
+> Install and configure Cloudflare Tunnel on your origin server using a
+> subdomain called “tunnel”, e.g. tunnel.yourwebsite.com. Make connections
+> proxied to your server protected using this tunnel.
+
+Followed instructions from this page:
+https://developers.cloudflare.com/tunnel/deployment-guides/aws/#2-create-a-tunnel
+
+To secure the AWS EC2, for the Security Group rules, only allow inbound traffic
+for port 22 (SSH) and TCP from AWS ALB and allow only outbound traffic to the
+Cloudflare Tunnel IP addresses. All Security Group rules are Allow rules;
+traffic that does not match a rule is blocked. Therefore, you can delete all
+inbound rules and leave only the relevant outbound rules.
