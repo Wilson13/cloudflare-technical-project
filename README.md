@@ -9,6 +9,8 @@
 
 Bought a domain on Cloudflare "wilson-here.uk".
 
+<div style="page-break-after: always;"></div>
+
 ## Step 1
 
 > Create an origin web server on a platform of your choosing. This could be in
@@ -25,6 +27,8 @@ Bought a domain on Cloudflare "wilson-here.uk".
 
 ![ec2_http_response](docs/ec2_http_response.png)
 
+<div style="page-break-after: always;"></div>
+
 ## Step 2
 
 > Proxy traffic to this server through Cloudflare. Add necessary configurations
@@ -34,6 +38,8 @@ Bought a domain on Cloudflare "wilson-here.uk".
 
 Default TLS mode was Full. However HTTPS connection won't work due to no
 certificate set up on ALB.
+
+<div style="page-break-after: always;"></div>
 
 ## Step 3
 
@@ -66,6 +72,8 @@ sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder
 ![full_strict_http_resp.png](docs/full_strict_http_resp.png)
 
 ![cloudflare_full_strict.png](docs/cloudflare_full_strict.png)
+
+<div style="page-break-after: always;"></div>
 
 ## Step 4
 
@@ -196,6 +204,8 @@ hurl -v test_rate_limiting.hurl
 error code: 1015
 ```
 
+<div style="page-break-after: always;"></div>
+
 ## Step 5
 
 > Install and configure Cloudflare Tunnel on your origin server using a
@@ -210,6 +220,8 @@ for port 22 (SSH) and TCP from AWS ALB and allow only outbound traffic to the
 Cloudflare Tunnel IP addresses. All Security Group rules are Allow rules;
 traffic that does not match a rule is blocked. Therefore, you can delete all
 inbound rules and leave only the relevant outbound rules.
+
+<div style="page-break-after: always;"></div>
 
 ## Step 6
 
@@ -238,6 +250,8 @@ Path: tunnel.wilson-here.uk/secure
 ![application_access.png](docs/application_access.png)
 
 ![application_login_page.png](docs/application_login_page.png)
+
+<div style="page-break-after: always;"></div>
 
 ## Step 8
 
@@ -269,6 +283,8 @@ npx wrangler r2 object put country-flag-bucket/my.svg --file=../assets/flags-4x3
 ![worker_secure_protected.png](docs/worker_secure_protected.png)
 
 ![worker_flag_protected.png](docs/worker_flag_protected.png)
+
+<div style="page-break-after: always;"></div>
 
 ## Notes
 
