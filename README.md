@@ -309,3 +309,38 @@ nmap -Pn <public-ip>                   # expect: only 22 shows open/filtered,  r
 | `nc -zv -w 3 <ip> 22`                           | `nc -z` = "just check if the port accepts a connection, don't send data"; `-v` verbose; `-w 3` = 3s timeout                                                                                  | Quick pass/fail port check, no HTTP involved — used here to confirm SSH _does_ respond                                   |
 | `nc -zv -w 3 <ip> 80` / `nc -zv -w 3 <ip> 3000` | Same technique, against the ports that should be blocked                                                                                                                                     | Confirms those ports refuse/timeout at the TCP level, not just at the HTTP layer                                         |
 | `nmap -Pn <ip>`                                 | Scans all common ports on the host in one pass; `-Pn` skips the initial ping check (many EC2 instances don't respond to ICMP, so a scan without `-Pn` would falsely report the host as down) | One command to see the full picture — which ports are actually open vs. filtered/closed, instead of testing port-by-port |
+
+## Deliverables:
+
+1. A working application with instructions needed to access any of the above.
+
+   - Proxied URL: GET https://app.wilson-here.uk/headers
+   - Tunnel URL: GET https://tunnel.wilson-here.uk/headers
+   - Secured URL: GET https://tunnel.wilson-here.uk/secure
+
+2. A report (PPT/Slide format) that addresses the following:
+   - A report detailing the requirements and how you implemented them step by
+     step.
+   - What use cases can you see different products being useful for?
+
+     Ans:
+     - Using Cloudflare Access (Cloudflare IdP and OTP) to secure and share
+       resources in a straight forward, easy-to-manage way.
+     - Using Cloudflare Worker to build clearly defined functions (serverless)
+       and also serve content based on user's geolocation.
+     - Using DNS proxy and Tunnel to improve origin server's security posture.
+
+   - How did you fill the gaps (if any) in your knowledge during the process?
+
+     Ans: With a combination of Google search, reading up documentation, asking
+     AI (Claude), and using Claude Code.
+
+   - How do you imagine that a target customer will find this experience?
+
+     Ans: My view is, a target customer will find this experience meaningful. As
+     an existing customer myself, my experience of using Cloudflare products and
+     services are limited to just a few of them (Application Services). These
+     steps allowed me to gain knowledge and experience in using three of the
+     four verticals — Application Services (proxy, TLS, rate limiting), Zero
+     Trust (Tunnel, Access, IdP), and Developer Platform (Workers, R2). The only
+     one untouched is Network Services,
