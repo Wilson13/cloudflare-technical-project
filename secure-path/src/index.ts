@@ -50,32 +50,12 @@ export default {
         return new Response("Object Not Found", { status: 404 });
       }
 
-      const svgBytes = new Uint8Array(await object.arrayBuffer());
-      const svgBase64 = btoa(String.fromCodePoint(...svgBytes));
-      const imageDataUri = `data:image/svg+xml;base64,${svgBase64}`;
+      const headers = new Headers();
+      object.writeHttpMetadata(headers);
+      headers.set("content-type", "image/svg+xml");
+      headers.set("etag", object.httpEtag);
 
-      const htmlContent = `
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <title>Hello from the Edge</title>
-        </head>
-        <body>
-            <h1>Welcome! Visitors from ${country}</h1>
-            <p>
-              Verified at ${requestTimestamp} (${new Date(requestTimestamp).toISOString()}) - visitor country matches requested country: ${country}
-            </p>
-            <img src="${imageDataUri}" alt="${country} flag" />
-      </body>
-    </html>
-    `;
-
-      return new Response(htmlContent, {
-        headers: {
-          "content-type": "text/html;charset=UTF-8",
-        },
-      });
+      return new Response(object.body, { headers });
     }
 
     return new Response("Not found", { status: 404 });

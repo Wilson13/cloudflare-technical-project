@@ -52,14 +52,6 @@ resource "aws_security_group" "alb" {
   description = "Allow HTTP from the internet to the ALB"
 
   ingress {
-    description = "HTTP"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
     description = "HTTPS from Cloudflare"
     from_port   = 443
     to_port     = 443
@@ -67,16 +59,19 @@ resource "aws_security_group" "alb" {
     cidr_blocks = var.cloudflare_cidrs
   }
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   tags = {
     Name = "${var.instance_name}-alb-sg"
   }
+}
+
+resource "aws_security_group_rule" "alb_egress_to_instance" {
+  type                     = "egress"
+  from_port                = var.app_port
+  to_port                  = var.app_port
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.alb.id
+  source_security_group_id = aws_security_group.this.id
+  description              = "Allow ALB to reach EC2 instance on app_port"
 }
 
 resource "aws_security_group" "this" {

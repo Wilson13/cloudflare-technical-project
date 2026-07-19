@@ -211,37 +211,6 @@ Cloudflare Tunnel IP addresses. All Security Group rules are Allow rules;
 traffic that does not match a rule is blocked. Therefore, you can delete all
 inbound rules and leave only the relevant outbound rules.
 
-## Step 8 (Did this before Step 6 & 7)
-
-### Setup a worker returning HTML with partial required info
-
-Followed instructions here:
-
-- https://developers.cloudflare.com/workers/wrangler/commands/workers/
-- https://developers.cloudflare.com/workers/wrangler/configuration/
-- https://developers.cloudflare.com/workers/configuration/routing/routes/
-- https://claytonerrington.com/blog/using-cloud-flare-workers-to-get-visitor-information/
-
-![worker_html_partial.png](docs/worker_html_partial.png)
-
-### Set up R2 bucket, upload flags, display svg
-
-- https://developers.cloudflare.com/workers/tutorials/upload-assets-with-r2/
-- https://flagicons.lipis.dev/
-
-```sh
-# Needs to enable R2 on the Cloudflare Dashboard
-npx wrangler r2 bucket create country-flag-bucket
-c
-npx wrangler r2 bucket list
-
-npx wrangler r2 object put country-flag-bucket/my.svg --file=../assets/flags-4x3/my.svg --remote
-```
-
-![worker_html_partial_w_link.png](docs/worker_html_partial_w_link.png)
-
-![worker_flag_unprotected.png](docs/worker_flag_unprotected.png)
-
 ## Step 6
 
 > Configure an SSO IdP (Identity Provider) of your choosing within Cloudflare
@@ -269,3 +238,58 @@ Path: tunnel.wilson-here.uk/secure
 ![application_access.png](docs/application_access.png)
 
 ![application_login_page.png](docs/application_login_page.png)
+
+## Step 8
+
+### Setup a worker returning HTML with partial required info
+
+Followed instructions here:
+
+- https://developers.cloudflare.com/workers/wrangler/commands/workers/
+- https://developers.cloudflare.com/workers/wrangler/configuration/
+- https://developers.cloudflare.com/workers/configuration/routing/routes/
+- https://claytonerrington.com/blog/using-cloud-flare-workers-to-get-visitor-information/
+
+![worker_html_partial.png](docs/worker_html_partial.png)
+
+### Set up R2 bucket, upload flags, display svg
+
+- https://developers.cloudflare.com/workers/tutorials/upload-assets-with-r2/
+- https://flagicons.lipis.dev/
+
+```sh
+# Needs to enable R2 on the Cloudflare Dashboard
+npx wrangler r2 bucket create country-flag-bucket
+c
+npx wrangler r2 bucket list
+
+npx wrangler r2 object put country-flag-bucket/my.svg --file=../assets/flags-4x3/my.svg --remote
+```
+
+![worker_secure_protected.png](docs/worker_secure_protected.png)
+
+![worker_flag_protected.png](docs/worker_flag_protected.png)
+
+## Notes
+
+To test EC2 public connection.
+
+Then try each of these against it:
+
+```sh
+curl -m 5 http://<public-ip>/          # expect: timeout/connection refused
+curl -m 5 http://<public-ip>:3000/     # expect: timeout/connection refused
+nc -zv -w 3 <public-ip> 22             # expect: succeeds (SSH still open)
+nc -zv -w 3 <public-ip> 80             # expect: fails
+nc -zv -w 3 <public-ip> 3000           # expect: fails
+nmap -Pn <public-ip>                   # expect: only 22 shows open/filtered,  rest closed
+```
+
+| Command                                         | What it does                                                                                                                                                                                 | Why                                                                                                                      |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `terraform output instance_public_ip`           | Reads the EC2 instance's public IP from Terraform state                                                                                                                                      | Need the actual IP before testing anything against it                                                                    |
+| `curl -m 5 http://<ip>/`                        | Sends an HTTP request to port 80, times out after 5s                                                                                                                                         | Confirms the app isn't reachable on plain HTTP directly against the instance                                             |
+| `curl -m 5 http://<ip>:3000/`                   | Same, but against port 3000 (the app's actual port)                                                                                                                                          | Confirms the app port isn't reachable directly either, only via the ALB                                                  |
+| `nc -zv -w 3 <ip> 22`                           | `nc -z` = "just check if the port accepts a connection, don't send data"; `-v` verbose; `-w 3` = 3s timeout                                                                                  | Quick pass/fail port check, no HTTP involved — used here to confirm SSH _does_ respond                                   |
+| `nc -zv -w 3 <ip> 80` / `nc -zv -w 3 <ip> 3000` | Same technique, against the ports that should be blocked                                                                                                                                     | Confirms those ports refuse/timeout at the TCP level, not just at the HTTP layer                                         |
+| `nmap -Pn <ip>`                                 | Scans all common ports on the host in one pass; `-Pn` skips the initial ping check (many EC2 instances don't respond to ICMP, so a scan without `-Pn` would falsely report the host as down) | One command to see the full picture — which ports are actually open vs. filtered/closed, instead of testing port-by-port |
