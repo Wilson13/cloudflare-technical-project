@@ -5,10 +5,10 @@ graph TB
     subgraph CF["Cloudflare"]
         direction TB
         Access["Cloudflare Access\n(IdP login + @cloudflare.com email policy)"]
-        Edge["Cloudflare Proxy\norange-clouded DNS record\nsource IPs restricted to cloudflare_cidrs"]
+        Tunnel["Cloudflare Tunnel\n(connects to Cloudflare's global network, port 7844)"]
         Worker["Worker: secure-path\n/secure -> auth landing page\n/secure/{country} -> country-gated flag"]
         R2[("R2 Bucket\ncountry-flag-bucket\n(private, SVG flags)")]
-        Tunnel["Cloudflare Tunnel\n(cloudflared edge, port 7844)"]
+        Edge["Cloudflare Proxy\napp.wilson-here.uk only\norange-clouded DNS record\nsource IPs restricted to cloudflare_cidrs"]
     end
 
     subgraph AWS["AWS (ap-southeast-1)"]
@@ -30,7 +30,8 @@ graph TB
     User -->|"tunnel.wilson-here.uk/secure*\n(Access-protected route)"| Access
     Access --> Worker
     Worker -->|"/secure/{country}\nfetch flag object"| R2
-    Worker -->|"forwards to origin\nvia tunnel route"| Tunnel
+
+    User -->|"tunnel.wilson-here.uk/headers\n(default tunnel route, not Access-protected)"| Tunnel
     Tunnel <-.->|"outbound-only\nQUIC/UDP or HTTP2/TCP"| EC2
 
     User -->|"app.wilson-here.uk\n(proxied CNAME)"| Edge
